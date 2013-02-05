@@ -7,7 +7,7 @@
 //
 
 #import "AppDelegate.h"
-
+#import "Reachability.h"
 @implementation AppDelegate
 
 - (void)dealloc
@@ -22,12 +22,44 @@
 @synthesize managedObjectContext = _managedObjectContext;
 @synthesize managedObjectModel = _managedObjectModel;
 @synthesize persistentStoreCoordinator = _persistentStoreCoordinator;
+//@synthesize rootViewController;
+@synthesize indexViewController;
+
+- (void)reachabilityChanged:(NSNotification *)note {
+    Reachability* curReach = [note object];
+    NSParameterAssert([curReach isKindOfClass: [Reachability class]]);
+    NetworkStatus status = [curReach currentReachabilityStatus];
+    
+    if (status == NotReachable) {
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@""
+                                                        message:@"无法连接到网络"
+                                                       delegate:nil
+                                              cancelButtonTitle:@"确定" otherButtonTitles:nil];
+        [alert show];
+        [alert release];
+    }
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
     self.window = [[[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]] autorelease];
     // Override point for customization after application launch.
     self.window.backgroundColor = [UIColor whiteColor];
+    
+    // 监测网络情况
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(reachabilityChanged:)
+                                                 name: kReachabilityChangedNotification
+                                               object: nil];
+    hostReach = [[Reachability reachabilityWithHostName:@"www.apple.com"] retain];
+    [hostReach startNotifier];
+    
+    //rootViewController = [[RootViewController alloc] init];
+    //[self.window setRootViewController:rootViewController];
+    //将首页停顿5秒
+    sleep(0);
+    indexViewController = [[IndexViewController alloc] init];
+    [self.window setRootViewController:indexViewController];
     [self.window makeKeyAndVisible];
     return YES;
 }
