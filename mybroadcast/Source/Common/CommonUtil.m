@@ -13,7 +13,7 @@
 
 - (id)init
 {
-    _globleUrl = @"http://218.75.127.84:8088/kangda";
+    _globleUrl = @"http://www.myheige.com:8088/kangda";
     //_globleUrl = @"http://192.168.1.102:8088/broadcast";
     //_globleUrl = @"http://localhost:8088/broadcast";
     return [super init];
